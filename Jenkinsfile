@@ -39,20 +39,22 @@ pipeline {
             steps {
                 script {
                     def SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    withCredentials([string(credentialsId: 'sonar-server', variable: 'sonar-server')]) {
-                        sh ''' 
-                            ${SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=uptime \
-                            -Dsonar.projectName=uptime \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.login=$sonar-server
-                        '''
+                    
+                    withSonarQubeEnv('sonar-server') {
+                        withCredentials([string(credentialsId: 'sonar-server', variable: 'SONAR_TOKEN')]) {
+                            sh """
+                                ${SCANNER_HOME}/bin/sonar-scanner \
+                                -Dsonar.projectKey=uptime \
+                                -Dsonar.projectName=uptime \
+                                -Dsonar.sources=. \
+                                -Dsonar.host.url=$SONAR_HOST_URL \
+                                -Dsonar.login=$SONAR_TOKEN
+                            """
+                        }
                     }
                 }
             }
         }
-
 
         stage('Quality Gate') {
             steps {
