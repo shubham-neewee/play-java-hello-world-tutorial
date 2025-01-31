@@ -56,7 +56,7 @@ pipeline {
         }
         stage('Docker Cleanup') {
             steps {
-                sh "docker rmi ${DOCKER_REPO}:${DOCKER_TAG} || truee"
+                sh "docker rmi ${DOCKER_REPO}:${DOCKER_TAG} || true"
             }
         }
     }
