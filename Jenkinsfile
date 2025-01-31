@@ -54,6 +54,7 @@ pipeline {
                 sh 'docker push $DOCKER_USER/java-play-${APP_VERSION}'
             }
         }
+
         stage('Docker Cleanup') {
             steps {
                 sh "docker rmi ${DOCKER_REPO}:${DOCKER_TAG} || true"
