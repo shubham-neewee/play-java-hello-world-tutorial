@@ -46,12 +46,12 @@ pipeline {
         }
         stage('Docker Tag Image') {
             steps {
-                sh 'docker tag play-java-hello-world-tutorial:${APP_VERSION} $DOCKER_USER/java-play:${APP_VERSION}'
+                sh 'docker tag play-java-hello-world-tutorial:${APP_VERSION} ${TAG_NAME}:${APP_VERSION}'
             }
         }
         stage('Docker Push') {
             steps {
-                sh 'docker push $DOCKER_USER/java-play:${APP_VERSION}'
+                sh 'docker push ${TAG_NAME}:${APP_VERSION}'
             }
         }
 

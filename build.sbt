@@ -1,7 +1,7 @@
 name := """play-java-hello-world-tutorial"""
 organization := "com.example"
 
-version := "1.0-SNAPSHOT"
+version := "pre-release-v1.0.0"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava)
   //.enablePlugins(PlayNettyServer).disablePlugins(PlayPekkoHttpServer) // uncomment to use the Netty backend
