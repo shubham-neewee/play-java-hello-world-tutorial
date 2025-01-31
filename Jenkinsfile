@@ -33,26 +33,30 @@ pipeline {
                 sh 'sbt docker:publishLocal'
             }
         }
-        stage('Docker Login') {
+        stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                withCredentials([usernamePassword(credentialsId: 'NeeweeDockerHubAccount', 
+                                                 usernameVariable: 'DOCKER_USER', 
+                                                 passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        docker login -u $DOCKER_USER -p $DOCKER_PASS
+                       """ 
                 }
             }
         }
         stage('Docker Tag Image') {
             steps {
-                sh 'docker tag java-play:${APP_VERSION} $DOCKER_USERNAME/java-play-${APP_VERSION}'
+                sh 'docker tag java-play:${APP_VERSION} $DOCKER_USER/java-play-${APP_VERSION}'
             }
         }
         stage('Docker Push') {
             steps {
-                sh 'docker push $DOCKER_USERNAME/java-play-${APP_VERSION}'
+                sh 'docker push $DOCKER_USER/java-play-${APP_VERSION}'
             }
         }
         stage('Docker Cleanup') {
             steps {
-                sh 'docker rmi java-play:${APP_VERSION}'
+                sh "docker rmi ${DOCKER_REPO}:${DOCKER_TAG} || true"
             }
         }
     }
