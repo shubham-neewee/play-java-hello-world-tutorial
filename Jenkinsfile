@@ -1,3 +1,4 @@
+// sqa_a0367f7df6ecbbad6ca0e1bb3c5246f5b6a8495f    - github-scan
 pipeline {
     agent any
 
@@ -33,7 +34,39 @@ pipeline {
                 sh 'sbt docker:publishLocal'
             }
         }
-        stage('Push Docker Image') {
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withCredentials([string(credentialsId: 'sonar-server', variable: 'SONAR_TOKEN')]) {
+                        sh ''' 
+                            ${SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectKey=uptime \
+                            -Dsonar.projectName=uptime \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=$SONAR_HOST_URL \
+                            -Dsonar.login=$SONAR_TOKEN
+                        '''
+                    }
+                }
+            }
+        }
+
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Quality Gate failed: ${qg.status}"
+                    }
+                }
+            }
+        }
+
+
+        stage('Login to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'NeeweeDockerHubAccount', 
                                                  usernameVariable: 'DOCKER_USER', 
