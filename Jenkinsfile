@@ -55,6 +55,16 @@ pipeline {
             }
         }
 
+        stage('Trivy Scan') {
+            steps {
+                sh '''
+                    wget https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+                    trivy image --format template --template @./html.tpl -o report.html ${TAG_NAME}:${APP_VERSION}
+                '''
+            }
+        }
+
+
         stage('Docker Cleanup') {
             steps {
                 sh "docker rmi ${DOCKER_REPO}:${DOCKER_TAG} || true"
@@ -62,3 +72,5 @@ pipeline {
         }
     }
 }
+
+
