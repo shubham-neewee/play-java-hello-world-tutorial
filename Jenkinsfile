@@ -35,27 +35,22 @@ pipeline {
             }
         }
 
-stage('SonarQube Analysis') {
-    steps {
-        script {
-            def SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            
-            withSonarQubeEnv('sonar-server') {
-                withCredentials([string(credentialsId: 'sonar-server', variable: 'SONAR_TOKEN')]) {
-                    sh """
-                        ${SCANNER_HOME}/bin/sonar-scanner \
-                        -Dsonar.projectKey=uptime \
-                        -Dsonar.projectName=uptime \
-                        -Dsonar.sources=. \
-                        -Dsonar.java.binaries=target/classes \
-                        -Dsonar.host.url=http://172.20.10.70:9000 \
-                        -Dsonar.token=$SONAR_TOKEN
-                    """
+
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=uptime \
+                    -Dsonar.projectKey=uptime '''
                 }
             }
         }
-    }
-}
+        stage("quality gate"){
+           steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
+                }
+            } 
+        }
 
 
 
