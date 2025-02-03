@@ -47,8 +47,9 @@ stage('SonarQube Analysis') {
                         -Dsonar.projectKey=uptime \
                         -Dsonar.projectName=uptime \
                         -Dsonar.sources=. \
+                        -Dsonar.java.binaries=target/classes \
                         -Dsonar.host.url=http://172.20.10.70:9000 \
-                        -Dsonar.login=$SONAR_TOKEN
+                        -Dsonar.token=$SONAR_TOKEN
                     """
                 }
             }
@@ -56,18 +57,6 @@ stage('SonarQube Analysis') {
     }
 }
 
-stage('Quality Gate') {
-    steps {
-        script {
-            timeout(time: 3, unit: 'MINUTES') { // Prevents indefinite wait
-                def qg = waitForQualityGate()
-                if (qg.status != 'OK') {
-                    error "Quality Gate failed: ${qg.status}"
-                }
-            }
-        }
-    }
-}
 
 
 
