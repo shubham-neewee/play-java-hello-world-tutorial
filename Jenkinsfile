@@ -35,37 +35,40 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    
-                    withSonarQubeEnv('sonar-server') {
-                        withCredentials([string(credentialsId: 'sonar-server', variable: 'SONAR_TOKEN')]) {
-                            sh """
-                                ${SCANNER_HOME}/bin/sonar-scanner \
-                                -Dsonar.projectKey=uptime \
-                                -Dsonar.projectName=uptime \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=$SONAR_HOST_URL \
-                                -Dsonar.login=$SONAR_TOKEN
-                            """
-                        }
-                    }
+stage('SonarQube Analysis') {
+    steps {
+        script {
+            def SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            
+            withSonarQubeEnv('sonar-server') {
+                withCredentials([string(credentialsId: 'sonar-server', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                        ${SCANNER_HOME}/bin/sonar-scanner \
+                        -Dsonar.projectKey=uptime \
+                        -Dsonar.projectName=uptime \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://172.20.10.70:9000 \
+                        -Dsonar.login=$SONAR_TOKEN
+                    """
                 }
             }
         }
+    }
+}
 
-        stage('Quality Gate') {
-            steps {
-                script {
-                    def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
-                        error "Quality Gate failed: ${qg.status}"
-                    }
+stage('Quality Gate') {
+    steps {
+        script {
+            timeout(time: 3, unit: 'MINUTES') { // Prevents indefinite wait
+                def qg = waitForQualityGate()
+                if (qg.status != 'OK') {
+                    error "Quality Gate failed: ${qg.status}"
                 }
             }
         }
+    }
+}
+
 
 
         stage('Login to DockerHub') {
