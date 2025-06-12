@@ -5,6 +5,7 @@ To follow the steps in this tutorial, you will need the correct version of Java 
 * Java Software Developer's Kit (SE) 11 or higher
 * sbt 1.9.6 or higher.
 
+# Addind this from the main repo for testing the bi-directional sync
 To check your Java version, enter the following in a command window:
 
 ```bash
