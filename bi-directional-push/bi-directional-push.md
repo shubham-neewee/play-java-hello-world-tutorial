@@ -2,14 +2,6 @@ Here's a complete list of Git commands to enable bi-directional sync between:
 
 # Main account: shubham-neewee
 
-# Secondary account: shubhamgour-neewee
-
-# Repo: play-java-hello-world-tutorial
-
-🔁 Goal
-✅ Any commit to the main repo → can be pushed to the secondary repo
-
-✅ Any commit to the secondary repo → can be pushed to the main repo
 
  # # ✅ One-Time Setup (Bi-Directional Sync)
 # 1. Clone the Repo from Main
